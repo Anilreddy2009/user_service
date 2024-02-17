@@ -1,0 +1,3 @@
+[submodule "src/submodules/entities"]
+	path = src/submodules/entities
+	url = https://github.com/Anilreddy2009/entities.git
