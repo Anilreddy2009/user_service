@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-deployment-v2
+  namespace: user-namespace
+  labels:
+    app: user-rep
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-rep
+  template:
+    metadata:
+      # annotations: 
+      #   proxy.istio.io/config: |-
+      #     proxyStatsMatcher:
+      #       inclusionPrefixes:
+      #         - "cluster.outbound"
+      #         - "cluster_manager"
+      #         - "listener_manager"
+      #         - "service"
+      #         - "cluster.xds-grpc"
+      labels:
+        app: user-rep
+        version: v2
+        istio: monitor
+    spec:
+      containers:
+        - name: user-rep
+          image: anilreddy3105/user-rep
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000

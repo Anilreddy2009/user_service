@@ -2,7 +2,8 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { signinUserDto, signupUserDto, userCart } from "src/submodules/entities/src/dto/user.dto";
+import { CartDto } from "src/submodules/entities/src/dto/cart.dto";
+import { signinUserDto, signupUserDto } from "src/submodules/entities/src/dto/user.dto";
 import { Queues } from "src/submodules/entities/src/enum/queues";
 import { rmqEvents } from "src/submodules/entities/src/enum/rmqEvents";
 import { User } from "src/submodules/entities/src/schema/user.schema";
@@ -30,9 +31,8 @@ export class UserService{
             this.logger.debug(`user encrypted password is ${body.password}`)
             const userData = new this.userSchema(body)
                              userData.save()
-            const payload:userCart={
-                phoneNumber:body.phoneNumber,
-                productIds:[]
+            const payload={
+                userId:body.phoneNumber
             }
             if(userData){
                 this.cartClient.emit(rmqEvents.CREATE_CART, payload)

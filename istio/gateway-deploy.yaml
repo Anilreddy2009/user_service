@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-deployment
+  namespace: development
+  labels:
+    app: user-rep
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-rep
+  template:
+    metadata:
+      # annotations: 
+      #   proxy.istio.io/config: |-
+      #     proxyStatsMatcher:
+      #       inclusionPrefixes:
+      #         - "cluster.outbound"
+      #         - "cluster_manager"
+      #         - "listener_manager"
+      #         - "service"
+      #         - "cluster.xds-grpc"
+      labels:
+        app: user-rep
+        version: v1
+        istio: monitor
+    spec:
+      containers:
+        - name: gateway-rep
+          image: arjunref/dev-assessment-gateway-service:D.182
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: user-namespace
+  labels:
+    app: user-rep
+    service: user-service
+spec:
+  type: NodePort
+  selector:
+    app: user-rep
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 30200

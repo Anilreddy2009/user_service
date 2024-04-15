@@ -1,0 +1,39 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: user-destination
+  namespace: user-namespace
+spec:
+  host: user-service
+  subsets:
+    - name: v1
+      labels:
+        app: user-rep
+        version: v1
+    - name: v2
+      labels:
+        app: user-rep
+        version: v2
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    portLevelSettings:
+    - port:
+        number: 8000 # Assuming your service listens on port 8000
+      tls:
+        mode: DISABLE
+    - port:
+        number: 8000 # Assuming your health check port
+      tls:
+        mode: DISABLE
+    connectionPool:
+      tcp:
+        maxConnections: 5 # Maximum number of connections to the upstream host
+      http:
+        http1MaxPendingRequests: 5 # Maximum number of pending HTTP requests to the upstream host
+        maxRequestsPerConnection: 5 # Maximum number of requests per connection to the upstream host
+    outlierDetection:
+      consecutive5xxErrors: 5 # Number of consecutive 5xx errors before a host is ejected from the pool
+      interval: 1s # Time interval between ejection sweep analysis
+      baseEjectionTime: 10s # Minimum ejection time
+      maxEjectionPercent: 100 # Maximum percentage of hosts ejected from the pool

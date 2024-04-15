@@ -10,7 +10,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options : {
       urls: [process.env.RBTMQ_HOST],
-      queue: Queues.CART,
+      queue: Queues.USER,
       queueOptions: {
         durable: true,
       }
